@@ -4,473 +4,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OCD Patient Clinical Analytics | SQL Project</title>
-
+<title>OCD Patient Clinical Analytics</title>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  font-family:Arial,sans-serif;
+  background:#0a1020;color:#e5e7eb;
 }
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #0b1120;
-    color: #e5e7eb;
-    line-height: 1.6;
+header{
+  height:68px;padding:0 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:#111c30;border-bottom:1px solid #263851;
 }
-
-header {
-    background: #111c31;
-    padding: 18px 6%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    border-bottom: 1px solid #26344d;
+.logo{font-weight:bold;color:#38bdf8;letter-spacing:1px}
+.counter{font-size:13px;color:#94a3b8}
+.slides{height:calc(100vh - 68px - 65px);position:relative}
+.slide{
+  display:none;width:100%;height:100%;
+  padding:35px 7%;
+  overflow-y:auto;
+  animation:fade .3s ease;
 }
-
-.logo {
-    color: #38bdf8;
-    font-size: 20px;
-    font-weight: bold;
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+@keyframes fade{from{opacity:.3;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+.eyebrow{color:#38bdf8;font-size:12px;letter-spacing:3px;font-weight:bold}
+h1{font-size:clamp(38px,5.5vw,72px);line-height:1.1;margin:18px 0}
+h2{font-size:clamp(27px,3vw,42px);margin:12px 0 25px}
+h2 span{color:#38bdf8}
+h3{font-size:17px;color:#38bdf8;margin-bottom:12px}
+p{color:#b8c5d8;line-height:1.8;font-size:15px}
+.hero{
+  display:grid;grid-template-columns:1.7fr 1fr;
+  gap:35px;align-items:center;
 }
-
-nav {
-    display: flex;
-    gap: 22px;
-    flex-wrap: wrap;
+.hero-box,.card{
+  background:#131f33;border:1px solid #2b405e;
+  border-radius:15px;padding:25px;
 }
-
-nav a {
-    color: #cbd5e1;
-    text-decoration: none;
-    font-size: 14px;
+.hero-box{text-align:center;background:linear-gradient(140deg,#123b59,#172554)}
+.hero-box strong{display:block;font-size:65px;color:#38bdf8}
+.hero-box p{font-size:14px}
+.actions{display:flex;gap:12px;margin-top:25px;flex-wrap:wrap}
+.btn{
+  display:inline-block;padding:12px 20px;
+  border-radius:7px;text-decoration:none;
+  background:#0284c7;color:white;font-size:13px;font-weight:bold;
 }
-
-nav a:hover {
-    color: #38bdf8;
+.btn.alt{background:transparent;border:1px solid #64748b}
+.grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
 }
-
-.container {
-    max-width: 1250px;
-    margin: auto;
-    padding: 35px 5%;
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat strong{font-size:34px;color:#38bdf8;display:block}
+.stat span{font-size:13px;color:#aab8cc}
+.metric{
+  display:flex;justify-content:space-between;gap:15px;
+  padding:10px 0;border-bottom:1px solid #293950;
+  color:#bdc9d9;font-size:14px;
 }
-
-.hero {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 35px;
-    min-height: 340px;
-    flex-wrap: wrap;
+.metric:last-child{border:0}
+.metric strong{color:white}
+.tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{
+  padding:10px 15px;border-radius:25px;
+  background:#1e344d;color:#bae6fd;
+  border:1px solid #31536e;font-size:13px;
 }
-
-.hero-content {
-    flex: 1 1 500px;
+.conclusion{
+  border-left:4px solid #38bdf8;
+  padding:25px 30px;background:#131f33;border-radius:10px;
 }
-
-.tag {
-    color: #38bdf8;
-    font-size: 13px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: bold;
+footer{
+  height:65px;background:#111c30;
+  border-top:1px solid #263851;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
 }
-
-h1 {
-    font-size: clamp(32px, 5vw, 55px);
-    line-height: 1.15;
-    margin: 15px 0;
-    color: #ffffff;
+.controls{display:flex;gap:12px}
+.controls button{
+  width:40px;height:40px;border:1px solid #405570;
+  background:#1b2b42;color:white;border-radius:8px;
+  cursor:pointer;font-size:19px;
 }
-
-.hero p {
-    color: #aab8cc;
-    max-width: 650px;
-    font-size: 16px;
+.controls button:hover{background:#0284c7}
+.progress{
+  height:3px;background:#263851;
+  position:absolute;bottom:0;left:0;width:100%;
 }
-
-.hero-box {
-    flex: 0 1 300px;
-    background: linear-gradient(135deg, #123b59, #172554);
-    padding: 30px;
-    border-radius: 18px;
-    border: 1px solid #285477;
-}
-
-.hero-box h2 {
-    color: #38bdf8;
-    font-size: 38px;
-}
-
-.hero-box p {
-    margin-top: 8px;
-    font-size: 14px;
-}
-
-.buttons {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 25px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 11px 20px;
-    border-radius: 7px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    background: #0284c7;
-    color: white;
-}
-
-.btn.secondary {
-    background: transparent;
-    border: 1px solid #64748b;
-}
-
-section {
-    margin-top: 45px;
-    scroll-margin-top: 25px;
-}
-
-.section-title {
-    font-size: 25px;
-    color: #ffffff;
-    margin-bottom: 20px;
-}
-
-.section-title span {
-    color: #38bdf8;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-}
-
-.card {
-    background: #131f33;
-    border: 1px solid #263851;
-    padding: 22px;
-    border-radius: 12px;
-}
-
-.stat-number {
-    color: #38bdf8;
-    font-size: 30px;
-    font-weight: bold;
-}
-
-.stat-label {
-    color: #aab8cc;
-    font-size: 14px;
-}
-
-.two-column {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-.card h3 {
-    color: #38bdf8;
-    margin-bottom: 10px;
-}
-
-.card p, .card li {
-    color: #b8c4d6;
-    font-size: 14px;
-}
-
-.card ul {
-    padding-left: 20px;
-}
-
-.horizontal-list {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-}
-
-.pill {
-    background: #1e344d;
-    color: #bae6fd;
-    border: 1px solid #31536e;
-    padding: 7px 13px;
-    border-radius: 20px;
-    font-size: 13px;
-}
-
-.findings {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.finding {
-    border-left: 3px solid #38bdf8;
-}
-
-footer {
-    margin-top: 60px;
-    padding: 28px 5%;
-    text-align: center;
-    background: #111c31;
-    color: #94a3b8;
-    font-size: 13px;
-}
-
-@media (max-width: 800px) {
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .findings {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    nav {
-        gap: 12px;
-    }
-
-    .two-column, .findings, .stats {
-        grid-template-columns: 1fr;
-    }
-
-    .hero {
-        padding-top: 15px;
-    }
+.progress span{display:block;height:100%;background:#38bdf8;width:0;transition:width .3s}
+.note{font-size:11px;color:#8498b3;margin-top:15px}
+@media(max-width:750px){
+  header{height:60px}
+  .slides{height:calc(100vh - 60px - 60px)}
+  .slide{padding:25px 6%}
+  .slide.active{justify-content:flex-start;padding-top:35px}
+  .hero,.grid,.grid.two{grid-template-columns:1fr}
+  .hero-box{padding:16px}
+  .hero-box strong{font-size:42px}
+  footer{height:60px}
+  .counter{font-size:11px}
 }
 </style>
 </head>
-
 <body>
 
 <header>
-    <div class="logo">OCD Analytics</div>
-    <nav>
-        <a href="#overview">Overview</a>
-        <a href="#dataset">Dataset</a>
-        <a href="#analysis">Analysis</a>
-        <a href="#findings">Findings</a>
-        <a href="#skills">SQL Skills</a>
-    </nav>
+  <div class="logo">OCD / ANALYTICS</div>
+  <div class="counter" id="counter">01 / 06</div>
 </header>
 
-<main class="container">
+<div class="slides">
 
-    <div class="hero" id="overview">
-        <div class="hero-content">
-            <div class="tag">SQL Portfolio Project</div>
-            <h1>OCD Patient<br>Clinical Analytics</h1>
-            <p>
-                An exploratory SQL project analyzing patient demographics,
-                OCD symptoms, Y-BOCS scores, previous diagnoses, and
-                medication records using MySQL.
-            </p>
-
-            <div class="buttons">
-                <a class="btn" href="ocd_patient_analysis.sql">View SQL File</a>
-                <a class="btn secondary" href="https://github.com/adarshpatel4873-ctrl"
-                   target="_blank">GitHub Profile</a>
-            </div>
-        </div>
-
-        <div class="hero-box">
-            <div class="tag">Dataset Size</div>
-            <h2>1,500</h2>
-            <p>Patient records analyzed using SQL queries.</p>
-        </div>
+<!-- SLIDE 1 -->
+<section class="slide active">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">MYSQL • DATA ANALYTICS • PORTFOLIO PROJECT</div>
+      <h1>OCD Patient<br><span style="color:#38bdf8">Clinical Analytics</span></h1>
+      <p>
+        An exploratory SQL project focused on analyzing 1,500 patient
+        records, understanding symptom patterns, exploring Y-BOCS scores
+        and identifying data quality issues.
+      </p>
+      <div class="actions">
+        <a class="btn" href="ocd_patient_analysis.sql">View SQL File</a>
+        <a class="btn alt" href="ocd_patient.csv">View Dataset</a>
+      </div>
     </div>
+    <div class="hero-box">
+      <strong>1,500</strong>
+      <p>Patient Records</p>
+      <p style="margin-top:12px">17 Columns • MySQL</p>
+    </div>
+  </div>
+</section>
 
-    <section id="dataset">
-        <h2 class="section-title">Project <span>Overview</span></h2>
+<!-- SLIDE 2 -->
+<section class="slide">
+  <div class="eyebrow">01 / PROJECT INTRODUCTION</div>
+  <h2>Project <span>Overview</span></h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Objective</h3>
+      <p>
+        To explore healthcare-related patient data using MySQL and extract
+        useful summaries about demographics, symptoms, diagnosis history,
+        and Y-BOCS scores.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Dataset</h3>
+      <p>
+        The dataset includes age, gender, ethnicity, marital status,
+        symptom duration, obsession and compulsion types, diagnosis
+        fields and medication information.
+      </p>
+    </div>
+    <div class="card stat"><strong>1,500</strong><span>Patient Records</span></div>
+    <div class="card stat"><strong>17</strong><span>Dataset Columns</span></div>
+  </div>
+</section>
 
-        <div class="stats">
-            <div class="card">
-                <div class="stat-number">1,500</div>
-                <div class="stat-label">Total Patient Records</div>
-            </div>
+<!-- SLIDE 3 -->
+<section class="slide">
+  <div class="eyebrow">02 / PATIENT DEMOGRAPHICS</div>
+  <h2>Understanding the <span>Dataset</span></h2>
+  <div class="grid">
+    <div class="card stat">
+      <strong>753</strong><span>Male Patients</span>
+    </div>
+    <div class="card stat">
+      <strong>747</strong><span>Female Patients</span>
+    </div>
+    <div class="card stat">
+      <strong>15+</strong><span>SQL Analysis Questions</span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3>What was explored?</h3>
+    <p>
+      Patient age and gender distribution, ethnicity, marital status,
+      family history, symptom duration and diagnosis dates.
+    </p>
+  </div>
+</section>
 
-            <div class="card">
-                <div class="stat-number">17</div>
-                <div class="stat-label">Dataset Columns</div>
-            </div>
+<!-- SLIDE 4 -->
+<section class="slide">
+  <div class="eyebrow">03 / SYMPTOM ANALYSIS</div>
+  <h2>Obsession & <span>Compulsion Types</span></h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Obsession Types</h3>
+      <div class="metric"><span>Harm-related</span><strong>333</strong></div>
+      <div class="metric"><span>Contamination</span><strong>306</strong></div>
+      <div class="metric"><span>Religious</span><strong>303</strong></div>
+      <div class="metric"><span>Symmetry</span><strong>280</strong></div>
+      <div class="metric"><span>Hoarding</span><strong>278</strong></div>
+    </div>
+    <div class="card">
+      <h3>Compulsion Types</h3>
+      <div class="metric"><span>Washing</span><strong>321</strong></div>
+      <div class="metric"><span>Counting</span><strong>316</strong></div>
+      <div class="metric"><span>Checking</span><strong>292</strong></div>
+      <div class="metric"><span>Praying</span><strong>286</strong></div>
+      <div class="metric"><span>Ordering</span><strong>285</strong></div>
+    </div>
+  </div>
+</section>
 
-            <div class="card">
-                <div class="stat-number">15+</div>
-                <div class="stat-label">SQL Analysis Questions</div>
-            </div>
+<!-- SLIDE 5 -->
+<section class="slide">
+  <div class="eyebrow">04 / KEY ANALYTICAL RESULTS</div>
+  <h2>Key <span>Findings</span></h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Average Y-BOCS Scores</h3>
+      <div class="metric"><span>Obsession</span><strong>20.05</strong></div>
+      <div class="metric"><span>Compulsion</span><strong>19.63</strong></div>
+    </div>
+    <div class="card">
+      <h3>Severity Categories</h3>
+      <div class="metric"><span>Severe</span><strong>1,044</strong></div>
+      <div class="metric"><span>Moderate</span><strong>238</strong></div>
+      <div class="metric"><span>Mild</span><strong>218</strong></div>
+    </div>
+    <div class="card">
+      <h3>Data Quality</h3>
+      <div class="metric"><span>Missing previous diagnoses</span><strong>248</strong></div>
+      <div class="metric"><span>Missing medications</span><strong>386</strong></div>
+      <div class="metric"><span>Both diagnoses present</span><strong>372</strong></div>
+    </div>
+  </div>
+  <p class="note">
+    Severity categories are the project's analytical grouping, not a
+    clinical diagnosis. Findings do not establish medical causation.
+  </p>
+</section>
 
-            <div class="card">
-                <div class="stat-number">MySQL</div>
-                <div class="stat-label">Database Technology</div>
-            </div>
-        </div>
+<!-- SLIDE 6 -->
+<section class="slide">
+  <div class="eyebrow">05 / TECHNOLOGY & CONCLUSION</div>
+  <h2>Tools, Skills & <span>Takeaways</span></h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>SQL Skills Used</h3>
+      <div class="tags">
+        <span class="tag">SELECT</span>
+        <span class="tag">WHERE</span>
+        <span class="tag">GROUP BY</span>
+        <span class="tag">JOIN</span>
+        <span class="tag">CTE</span>
+        <span class="tag">Subqueries</span>
+        <span class="tag">Window Functions</span>
+        <span class="tag">CASE</span>
+        <span class="tag">Aggregations</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Conclusion</h3>
+      <p>
+        This project demonstrates how SQL can explore structured
+        healthcare-related data, summarize patient information,
+        identify patterns and check data quality. It strengthened
+        practical MySQL and exploratory data analysis skills.
+      </p>
+    </div>
+  </div>
+  <div class="conclusion" style="margin-top:18px">
+    <h3>Thank You</h3>
+    <p>OCD Patient Clinical Analytics | Created by Adarsh | MySQL Portfolio Project</p>
+  </div>
+  <p class="note">
+    Educational data analysis only. Not medical advice or clinical research.
+  </p>
+</section>
 
-        <div class="two-column" style="margin-top:18px;">
-            <div class="card">
-                <h3>Project Objective</h3>
-                <p>
-                    The objective is to explore the dataset and extract
-                    meaningful information through SQL queries. The analysis
-                    focuses on patient demographics, symptom patterns,
-                    diagnosis history, and Y-BOCS scores.
-                </p>
-            </div>
-
-            <div class="card">
-                <h3>Dataset Information</h3>
-                <p>
-                    The dataset contains patient age, gender, ethnicity,
-                    marital status, symptom duration, obsession and
-                    compulsion types, Y-BOCS scores, depression and anxiety
-                    diagnoses, and medication information.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section id="analysis">
-        <h2 class="section-title">Exploratory <span>Analysis</span></h2>
-
-        <div class="two-column">
-            <div class="card">
-                <h3>Obsession Types</h3>
-                <ul>
-                    <li>Harm-related: 333 patients</li>
-                    <li>Contamination: 306 patients</li>
-                    <li>Religious: 303 patients</li>
-                    <li>Symmetry: 280 patients</li>
-                    <li>Hoarding: 278 patients</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h3>Compulsion Types</h3>
-                <ul>
-                    <li>Washing: 321 patients</li>
-                    <li>Counting: 316 patients</li>
-                    <li>Checking: 292 patients</li>
-                    <li>Praying: 286 patients</li>
-                    <li>Ordering: 285 patients</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h3>Y-BOCS Scores</h3>
-                <p>Average obsession score: <strong>20.05</strong></p>
-                <p>Average compulsion score: <strong>19.63</strong></p>
-            </div>
-
-            <div class="card">
-                <h3>Diagnosis Information</h3>
-                <p>
-                    372 records have both depression and anxiety diagnoses
-                    marked as present in the dataset.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section id="findings">
-        <h2 class="section-title">Key <span>Findings</span></h2>
-
-        <div class="findings">
-            <div class="card finding">
-                <h3>Gender Distribution</h3>
-                <p>Male: 753</p>
-                <p>Female: 747</p>
-            </div>
-
-            <div class="card finding">
-                <h3>Severity Categories</h3>
-                <p>Severe: 1,044</p>
-                <p>Moderate: 238</p>
-                <p>Mild: 218</p>
-            </div>
-
-            <div class="card finding">
-                <h3>Data Quality</h3>
-                <p>248 missing values in previous diagnoses.</p>
-                <p>386 missing values in medications.</p>
-            </div>
-        </div>
-
-        <p style="color:#94a3b8; font-size:12px; margin-top:12px;">
-            Severity categories shown here use the project's SQL grouping
-            rule: scores up to 20 = Mild, 21–30 = Moderate, and above 30 = Severe.
-            These are analytical categories for this project, not a clinical
-            diagnosis.
-        </p>
-    </section>
-
-    <section id="skills">
-        <h2 class="section-title">SQL <span>Skills Used</span></h2>
-
-        <div class="card">
-            <p>
-                The project uses SQL concepts to clean, organize, query,
-                and analyze patient data.
-            </p>
-
-            <div class="horizontal-list">
-                <span class="pill">SELECT</span>
-                <span class="pill">WHERE</span>
-                <span class="pill">GROUP BY</span>
-                <span class="pill">ORDER BY</span>
-                <span class="pill">Aggregate Functions</span>
-                <span class="pill">JOIN</span>
-                <span class="pill">Subqueries</span>
-                <span class="pill">CTE</span>
-                <span class="pill">Window Functions</span>
-                <span class="pill">CASE Statements</span>
-                <span class="pill">Data Quality Checks</span>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h2 class="section-title">Project <span>Conclusion</span></h2>
-
-        <div class="card">
-            <p>
-                This project demonstrates how SQL can be used to explore
-                structured healthcare-related data, identify patterns,
-                summarize patient information, and check data quality.
-                It helped strengthen practical skills in MySQL and
-                exploratory data analysis.
-            </p>
-            <p style="margin-top:12px; color:#94a3b8;">
-                Disclaimer: This is an educational data analysis project.
-                The dataset analysis does not establish medical conclusions,
-                causation, or treatment recommendations.
-            </p>
-        </div>
-    </section>
-
-</main>
+<div class="progress"><span id="progress"></span></div>
+</div>
 
 <footer>
-    <p>OCD Patient Clinical Analytics | SQL Portfolio Project</p>
-    <p>Created by Adarsh | MySQL</p>
+  <div class="counter">OCD PATIENT ANALYTICS</div>
+  <div class="controls">
+    <button onclick="changeSlide(-1)" aria-label="Previous slide">‹</button>
+    <button onclick="changeSlide(1)" aria-label="Next slide">›</button>
+  </div>
+  <div class="counter">Use ← → keys</div>
 </footer>
 
+<script>
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+
+function showSlide(index){
+  current = Math.max(0,Math.min(index,slides.length-1));
+  slides.forEach((slide,i)=>slide.classList.toggle('active',i===current));
+  document.getElementById('counter').textContent =
+    String(current+1).padStart(2,'0') + ' / ' +
+    String(slides.length).padStart(2,'0');
+  document.getElementById('progress').style.width =
+    ((current+1)/slides.length*100)+'%';
+}
+
+function changeSlide(step){showSlide(current+step);}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){changeSlide(1);}
+  if(e.key==='ArrowLeft'){changeSlide(-1);}
+});
+
+showSlide(0);
+</script>
 </body>
 </html>
+
